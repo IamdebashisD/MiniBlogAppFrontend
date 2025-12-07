@@ -17,7 +17,7 @@ api.interceptors.request.use((config) => {
 })
 
 // Optional: response interceptor to handle 401 -> try refresh (simple)
-api.interceptors.request,use(
+api.interceptors.response.use(
     (res) => res,
     async (err) => {
         const originalRequest = err.config
