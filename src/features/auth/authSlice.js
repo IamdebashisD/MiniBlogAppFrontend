@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { loginUser, registerUser } from './authThunks'
+import { loginUser, registerUser, logoutUser } from './authThunks'
 import { getUser, getAccessToken } from '../../services/token.service'
 
 const initialState = {
@@ -7,7 +7,7 @@ const initialState = {
     token: getAccessToken(),
     loading: false,
     error: null,
-    isAuthenticated: !!getAccessToken
+    isAuthenticated: !!getAccessToken()
 }
 
 const authSlice = createSlice({
@@ -44,6 +44,7 @@ const authSlice = createSlice({
             state.error = action.payload?.message || action.error?.message
         })
 
+
         // register
         .addCase(registerUser.pending, (state) => {
             state.loading = true
@@ -57,11 +58,27 @@ const authSlice = createSlice({
             state.error = action.payload?.message || action.error?.message
         })
         
+
         // Logout
-        .addCase(registerUser.fulfilled, (state) => {
+        .addCase(logoutUser.pending, (state) => {
+            state.loading = true
+            state.error = null
+            state.isAuthenticated = false
             state.user = null
             state.token = null
+        })
+        .addCase(logoutUser.fulfilled, (state, action) =>{
+            state.loading = false
             state.isAuthenticated = false
+            state.user = null
+            state.token = null
+        })
+        .addCase(logoutUser.rejected, (state, action) => {
+            state.loading = false
+            state.error = action.payload?.message || action.error?.message
+            state.isAuthenticated = false
+            state.user = null
+            state.token = null
         })
     }
 
