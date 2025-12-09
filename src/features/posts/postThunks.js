@@ -58,14 +58,22 @@ export const fetchAllPosts = createAsyncThunk(
     }
 )
 
-export const fetchPostById = createAsyncThunk(
-    'post/fetchPostById',
+export const fetchPostByIdWithComments = createAsyncThunk(
+    'post/fetchPostByIdWithComments',
     async (postId, {rejectWithValue}) => {
         try {
-            const response = await api.get(`/post/get_post_byId/${postId}`)
-            const body = response.data
-            if (body.error_code) return rejectWithValue(body)
-            return body.data
+            const [postResponse, commentsResponse] = await Promise.all([
+                api.get(`/post/get_post_byId/${postId}`),
+                api.get(`/comments/get_by_post/${postId}`)
+            ])
+            const postBody = postResponse.data
+            const commentsBody = commentsResponse.data
+            if (postBody.error_code) return rejectWithValue(postBody)
+            if (commentsBody.error_code) return rejectWithValue(commentsBody)
+            return {
+                post: postBody.data,
+                comments: commentsBody.data
+            }
         } catch(error){
             return rejectWithValue(error.response?.data?.message || error.data?.message)
         }
@@ -79,7 +87,10 @@ export const toggleLikeOnPost = createAsyncThunk(
             const response = await api.post(`/post/toggle_like/${postId}`)
             const body = response.data
             if(body.error_code) return rejectWithValue(body)
-            return body.data
+            return {
+                postId,
+                liked: body.data.isLiked
+            }
         } catch(error){
             return rejectWithValue(error.response?.data?.message || error.data?.message)
         }
