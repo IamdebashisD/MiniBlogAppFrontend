@@ -206,3 +206,7 @@ const postSlice = createSlice({
 
     }
 })
+
+
+export const { toggleLikeLocally } = postSlice.actions
+export default postSlice.reducer
