@@ -40,7 +40,7 @@ const initialState = {
 }
 
 const postSlice = createSlice({
-    name: 'posts',
+    name: 'post',
     initialState,
     reducers: {
         // Clear errors
