@@ -74,18 +74,12 @@ const postSlice = createSlice({
         // Toggle like locally (optimistic update)
         toggleLikeLocally: (state, action) => {
             const postId = action.payload
-            const post = state.posts.find(p => p.id === postId)
+            const post = state.posts.find(p => p.post_id === postId)
             if(post){
                 post.isLiked = !post.isLiked
                 post.likes_count += post.isLiked ? 1 : -1
             }
-
-            if (state.currentPost?.post?.id === postId){
-                const p = state.currentPost.post
-                p.isLiked = !p.isLiked
-                p.likes_count += p.isLiked ? 1 : -1 
-            }
-        },
+        }
     },
 
     extraReducers: (builder) => {
@@ -98,9 +92,13 @@ const postSlice = createSlice({
         })
         .addCase(fetchAllPosts.fulfilled, (state, action) => {
             state.loading = false
-            const {posts, pagination} = action.payload
-            state.posts = posts
-            state.pagination = pagination
+            state.posts = (action.payload.post_data || action.payload.data || []).map( post => ({
+                ...post,
+                isLiked: false,
+                likes_count: 0
+            }))
+            // console.log(state.posts)
+            state.pagination = action.payload.pagination || null
         })
         .addCase(fetchAllPosts.rejected, (state, action) => {
             state.loading = false
@@ -155,7 +153,7 @@ const postSlice = createSlice({
             state.deleting = false
             const deletedId = action.payload.id
 
-            state.posts = state.posts.filter( post => post.id !== deletedId)
+            state.posts = state.posts.filter( post => post.post_id !== deletedId)
         })
         .addCase(deletePost.rejected, (state, action) => {
             state.deleting = false
@@ -188,13 +186,12 @@ const postSlice = createSlice({
 
             const {postId, liked} = action.payload
 
-            const post = state.posts.find( p => p.id === postId)
+            const post = state.posts.find( p => p.post_id === postId)
             if(post){
                 post.isLiked = liked
-                post.likes_count += liked ? 1 : -1
             }
 
-            if(state.currentPost?.post?.id === postId){
+            if(state.currentPost?.post?.post_id === postId){
                 state.currentPost.post.isLiked = liked
                 state.currentPost.post.likes_count += liked ? 1 : -1
             }
@@ -202,6 +199,15 @@ const postSlice = createSlice({
         .addCase(toggleLikeOnPost.rejected, (state, action) => {
             state.togglingLike = false
             state.toggleLikeError = action.payload || action.error?.message
+
+            // Rollback - Optimistic updates
+            const postId = action.meta.arg
+            const post = state.posts.find( post => post.post_id == postId)
+            
+            if(post){
+                post.isLiked = !post.isLiked
+                post.likes_count += post.isLiked ? 1 : -1
+            }
         })
 
     }
