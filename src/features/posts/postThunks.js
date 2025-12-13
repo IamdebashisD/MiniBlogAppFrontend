@@ -84,12 +84,12 @@ export const toggleLikeOnPost = createAsyncThunk(
     'post/toggleLikeOnPost',
     async (postId, {rejectWithValue}) => {
         try {
-            const response = await api.post(`/post/toggle_like/${postId}`)
+            const response = await api.post(`/like/toggle_like/${postId}`)
             const body = response.data
             if(body.error_code) return rejectWithValue(body)
             return {
                 postId,
-                liked: body.data.isLiked
+                liked: body.data.liked
             }
         } catch(error){
             return rejectWithValue(error.response?.data?.message || error.data?.message)
