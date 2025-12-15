@@ -6,7 +6,7 @@ import { setAccessToken,setRefreshToken, setUser, clearTokens, getRefreshToken }
 export const loginUser = createAsyncThunk('auth/login', async (payload, { rejectWithValue }) => {
     try{
         const response = await api.post('auth/login', payload)
-        const body = response.data.json()
+        const body = response.data
         if(body.error_code) return rejectWithValue(body);
         const data = body.data
         setAccessToken(data.access_token)
