@@ -48,6 +48,7 @@ function Register() {
                         id='username' 
                         className='w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#401B1C]'
                         placeholder='Enter username'
+                        required
                     />
                 </div>
 
@@ -63,6 +64,7 @@ function Register() {
                         id='email'
                         className='w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#401B1C]'  
                         placeholder='Enter email'
+                        required
                     />
                 </div>
 
@@ -78,6 +80,7 @@ function Register() {
                         id='password' 
                         className='w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#401B1C]' 
                         placeholder='Enter password'
+                        required
                     />
                 </div>
 
