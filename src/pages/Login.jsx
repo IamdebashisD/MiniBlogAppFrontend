@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
 import {loginUser} from '../features/auth/authThunks'
 import { useSelector, useDispatch } from 'react-redux'
+import view from '../assets/likeandUnlike/view.png'
+import hidden from '../assets/likeandUnlike/hidden.png'
 
 function Login() {
   const {loading, error} = useSelector(state => state.auth)
   const dispatch = useDispatch()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleLogin = (event) =>{
     event.preventDefault()
@@ -48,18 +52,24 @@ function Login() {
                 </div>
 
                 {/* Password */}
-                <div>  
+                <div className='relative'>  
                     <label className='block mb-1 text-sm font-medium'> 
                         Password
                     </label> 
                     <input 
                         value={password}
                         onChange={(e) => setPassword(e.target.value)} 
-                        type="password" 
+                        type={showPassword ? "text":"password" }
                         id='password' 
                         className='w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#401B1C]' 
                         placeholder='Enter password'
                     />
+                    <span
+                      className='absolute inset-y-0 flex items-center cursor-pointer right-3'
+                      onClick={()=>setShowPassword(prev => !prev)}
+                    >
+                      <img src={showPassword ? hidden: view} alt='eye' width={18} />
+                    </span>
                 </div>
 
                 {/* Error */}
