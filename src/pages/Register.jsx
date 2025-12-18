@@ -2,12 +2,18 @@ import React, { useState } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import { registerUser } from '../features/auth/authThunks'
 
+import view from '../assets/likeandUnlike/view.png'
+import hidden from '../assets/likeandUnlike/hidden.png'
+
 function Register() {
     const dispatch = useDispatch()
     const {loading, error} = useSelector(state => state.auth)
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    const [showPassword, setShowPassword] = useState(false)
+    
 
 
     const handleRegister = (event) => {
@@ -39,7 +45,7 @@ function Register() {
                 {/* Username */}
                 <div>
                     <label className='block mb-1 text-sm font-medium' > 
-                        Username 
+                        Username (Required field)
                     </label>
                     <input 
                         value={username}
@@ -55,7 +61,7 @@ function Register() {
                 {/* Email */}
                 <div >
                     <label className='block mb-1 text-sm font-medium'> 
-                        Email
+                        Email (Required field)
                     </label>
                     <input 
                         value={email}
@@ -69,19 +75,25 @@ function Register() {
                 </div>
 
                 {/* Password */}
-                <div>  
+                <div className='relative'>  
                     <label className='block mb-1 text-sm font-medium'> 
-                        Password
+                        Password (Required field)
                     </label> 
                     <input 
                         value={password}
                         onChange={(e) => setPassword(e.target.value)} 
-                        type="password" 
-                        id='password' 
+                        type={showPassword ? "text": "password"} 
+                        id='userPassword' 
                         className='w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#401B1C]' 
                         placeholder='Enter password'
                         required
                     />
+                    <span
+                        className='absolute inset-y-0 flex items-center cursor-pointer right-3'
+                        onClick={()=>setShowPassword(prev => !prev)}
+                    >
+                        <img src={showPassword ? hidden: view} alt='eye' width={18} />
+                    </span>
                 </div>
 
                 {/* Error */}
