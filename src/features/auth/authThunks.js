@@ -14,7 +14,7 @@ export const loginUser = createAsyncThunk('auth/login', async (payload, { reject
         if(data.user) setUser(data.user);
         return data
     } catch(error){
-        return rejectWithValue(error.message?.data || error.message);
+        return rejectWithValue(error.resposne?.data?.message || error.message);
     }
 })
 
@@ -23,10 +23,10 @@ export const registerUser = createAsyncThunk('auth/register', async (payload, {r
     try{
         const response = await api.post('auth/register', payload);
         const body = response.data
-        if(body.error_code) return rejectWithValue(body);
+        if(body.error_code) return rejectWithValue(body)
         return body.data
     } catch(error){
-        return rejectWithValue(error.message?.data || error.message);
+        return rejectWithValue(error.response?.data || error.message);
     }
 })
 
