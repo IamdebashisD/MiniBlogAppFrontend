@@ -94,8 +94,6 @@ const postSlice = createSlice({
             state.loading = false
             state.posts = (action.payload.post_data || action.payload.data || []).map( post => ({
                 ...post,
-                isLiked: false,
-                likes_count: 0
             }))
             // console.log(state.posts)
             state.pagination = action.payload.pagination || null
@@ -212,7 +210,6 @@ const postSlice = createSlice({
 
     }
 })
-
 
 export const { toggleLikeLocally } = postSlice.actions
 export default postSlice.reducer
