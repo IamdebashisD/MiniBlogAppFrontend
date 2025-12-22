@@ -7,6 +7,7 @@ import {
     fetchPostByIdWithComments, 
     toggleLikeOnPost
  } from "./postThunks";
+ import {  isLiked , countLikes } from '../likes/likeThunks'
 
 const initialState = {
     // Post data
@@ -62,11 +63,11 @@ const postSlice = createSlice({
         // Update post locally (for optimistic updates)
         updatePostLocally: (state, action) => {
             const { postId, updateData } = action.payload
-            const postIndex = state.posts.findIndex(post => post.id === postId)
+            const postIndex = state.posts.findIndex(post => post.post_id === postId)
             if (postIndex !== -1) {
                 state.posts[postIndex] = {...state.posts[postIndex], ...updateData}
             }
-            if (state.currentPost && state.currentPost.id === postId){
+            if (state.currentPost && state.currentPost.post_id === postId){
                 state.currentPost = {...state.currentPost, ...updateData}
             }
         },
@@ -151,7 +152,7 @@ const postSlice = createSlice({
             state.deleting = false
             const deletedId = action.payload.id
 
-            state.posts = state.posts.filter( post => post.post_id !== deletedId)
+            state.posts = state.posts.filter(post => post.post_id !== deletedId)
         })
         .addCase(deletePost.rejected, (state, action) => {
             state.deleting = false
@@ -183,15 +184,14 @@ const postSlice = createSlice({
             state.togglingLike = false
 
             const {postId, liked} = action.payload
-
             const post = state.posts.find( p => p.post_id === postId)
+
             if(post){
                 post.isLiked = liked
             }
 
             if(state.currentPost?.post?.post_id === postId){
                 state.currentPost.post.isLiked = liked
-                state.currentPost.post.likes_count += liked ? 1 : -1
             }
         })
         .addCase(toggleLikeOnPost.rejected, (state, action) => {
@@ -211,5 +211,8 @@ const postSlice = createSlice({
     }
 })
 
-export const { toggleLikeLocally } = postSlice.actions
+export const { 
+    toggleLikeLocally,
+} = postSlice.actions
+
 export default postSlice.reducer
