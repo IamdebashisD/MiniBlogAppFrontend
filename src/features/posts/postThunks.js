@@ -50,7 +50,6 @@ export const fetchAllPosts = createAsyncThunk(
         try {
             const response = await api.get(`/post/get_all_posts?page=${page}&per_page=${per_page}`)
             const body = response.data
-            console.log("FETCH ALL POSTS RESPONSE:", body)
             if (body.error_code) return rejectWithValue(body)
             return body.data
         } catch(error){
