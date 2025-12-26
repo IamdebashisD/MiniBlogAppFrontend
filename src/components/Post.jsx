@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Heart, MessageCircle, Send } from 'lucide-react'
 import { CommentSection } from './CommentSection.jsx'
 import { useDispatch, useSelector } from 'react-redux'
@@ -22,7 +22,7 @@ export function Post({ post }) {
         setShowComments(!showComments)
     }
 
-    const formatTimestamp = (date) => {
+    const formatTimestamp = useCallback((date) => {
         const now = new Date();
         const diffMs = now.getTime() - date.getTime();
         const diffMins = Math.floor(diffMs / 60000);
@@ -33,36 +33,37 @@ export function Post({ post }) {
         if (diffMins < 60) return `${diffMins}m ago`;
         if (diffHours < 24) return `${diffHours}h ago`;
         return `${diffDays}d ago`;
-    };
+    }, []);
 
 
 
-    const commentsState  = useSelector(
-        state => 
-            state.comments.commentsByPostId[post.post_id] || 
-            { data: { comments_data: [], pagination: { total: 0 } } }
-    );
+    const commentsState = useSelector(state => state.comments.commentsByPostId[post.post_id]);
 
-    const comments = commentsState?.data?.comments_data || [];
-    const totalComments = commentsState?.data?.pagination?.total || 0;
-    console.log(comments.length)
-    
+    const comments = commentsState?.items || []
+    const totalComments = commentsState?.total || 0
+    const addLoading = commentsState?.addLoading || false
+    const commentLoading = commentsState?.loading || false
+
+
+
     useEffect(() => {
-        if (!showComments && comments.length === 0) {
+        if(!commentsState){
             dispatch(fetchCommentsByPostId(post.post_id))
         }
-    }, [showComments, post.post_id, comments.length])
+    }, [dispatch, post.post_id]);
 
-
+    
     const handleCommentSubmit = (event) => {
         event.preventDefault()
-        console.log(commentText)
-        if(commentText.trim()){
-            dispatch(addComment({ post_id: post.post_id, content: commentText }))
-            setCommentText('')
-        }
-    }
 
+        if (!commentText.trim()) return 
+        dispatch(addComment({
+            post_id: post.post_id,
+            content: commentText
+        }))
+        
+        setCommentText('')
+    }
 
 
 
@@ -72,7 +73,7 @@ export function Post({ post }) {
                 {/* Post Header */}
                 <div className="flex items-start gap-3">
                     <div className="flex items-center justify-center w-10 h-10 font-semibold text-white rounded-full bg-gradient-to-br from-purple-400 to-pink-400">
-                        {post.user.username?.[0].toUpperCase() || 'G'}
+                        {post.user?.username?.[0]?.toUpperCase() || 'G'}
                     </div>
                     <div className="flex-1 text-left">
                         <div className="flex items-center gap-2">
@@ -116,7 +117,7 @@ export function Post({ post }) {
                         {/* Comments Section */}
                         {showComments && (
                             <div className="mt-4 space-y-3">
-                                <CommentSection comments={comments} />
+                                <CommentSection comments={comments} loading={commentLoading} />
 
                                 {/* Add Comment */}
                                 <form onSubmit={handleCommentSubmit} className="flex gap-2">
@@ -129,10 +130,10 @@ export function Post({ post }) {
                                     />
                                     <button
                                         type="submit"
-                                        disabled={!commentText.trim()}
+                                        disabled={addLoading || !commentText.trim()}
                                         className="px-4 py-2 text-white transition-colors bg-purple-600 rounded-full hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                                     >
-                                        <Send className="w-4 h-4" />
+                                       {addLoading ? 'adding...' : <Send className="w-4 h-4" />}
                                     </button>
                                 </form>
                             </div>
