@@ -77,7 +77,7 @@ export function Post({ post }) {
                     </div>
                     <div className="flex-1 text-left">
                         <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-900">{(post.user.username).length < 20 ? post.user.username : post.user.username.slice(0, 15)}</span>
+                            <span className="font-semibold text-gray-900">{(post?.user?.username)?.length < 20 ? post.user?.username : post.user?.username.slice(0, 15)}</span>
                             <span className="text-sm text-gray-500">
                                 {formatTimestamp(new Date(post.created_at))}
                             </span>
