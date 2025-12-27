@@ -25,7 +25,7 @@ function Register() {
                 email,
                 password
             }
-            console.log(payloadRegisterData)
+            // console.log(payloadRegisterData)
             dispatch(registerUser(payloadRegisterData))
             setUsername('')
             setEmail('')
@@ -75,25 +75,27 @@ function Register() {
                 </div>
 
                 {/* Password */}
-                <div className='relative'>  
+                <div >  
                     <label className='block mb-1 text-sm font-medium'> 
                         Password (Required field)
                     </label> 
-                    <input 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)} 
-                        type={showPassword ? "text": "password"} 
-                        id='userPassword' 
-                        className='w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#401B1C]' 
-                        placeholder='Enter password'
-                        required
-                    />
-                    <span
-                        className='absolute inset-y-0 flex items-center cursor-pointer right-3'
-                        onClick={()=>setShowPassword(prev => !prev)}
-                    >
-                        <img src={showPassword ? hidden: view} alt='eye' width={18} />
-                    </span>
+                    <div className='relative'>
+                        <input 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)} 
+                            type={showPassword ? "text": "password"} 
+                            id='userPassword' 
+                            className='w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#401B1C]' 
+                            placeholder='Enter password'
+                            required
+                        />
+                        <span
+                            className='absolute inset-y-0 flex items-center cursor-pointer right-3'
+                            onClick={()=>setShowPassword(prev => !prev)}
+                        >
+                            <img src={showPassword ? hidden: view} alt='eye' width={15} height={14} />
+                        </span>
+                    </div>
                 </div>
 
                 {/* Error */}
