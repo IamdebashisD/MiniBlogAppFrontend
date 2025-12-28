@@ -1,13 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { 
-    createPost, 
-    updatePost, 
-    deletePost, 
-    fetchAllPosts, 
-    fetchPostByIdWithComments, 
+import {
+    createPost,
+    updatePost,
+    deletePost,
+    fetchAllPosts,
+    fetchPostByIdWithComments,
     toggleLikeOnPost
- } from "./postThunks";
- import {  isLiked , countLikes } from '../likes/likeThunks'
+} from "./postThunks";
 
 const initialState = {
     // Post data
@@ -57,7 +56,7 @@ const postSlice = createSlice({
 
         clearCurrentPost: (state) => {
             state.currentPost = null
-            state.singleError =  null
+            state.singleError = null
         },
 
         // Update post locally (for optimistic updates)
@@ -65,154 +64,160 @@ const postSlice = createSlice({
             const { postId, updateData } = action.payload
             const postIndex = state.posts.findIndex(post => post.post_id === postId)
             if (postIndex !== -1) {
-                state.posts[postIndex] = {...state.posts[postIndex], ...updateData}
+                state.posts[postIndex] = { ...state.posts[postIndex], ...updateData }
             }
-            if (state.currentPost && state.currentPost.post_id === postId){
-                state.currentPost = {...state.currentPost, ...updateData}
+            if (state.currentPost && state.currentPost.post_id === postId) {
+                state.currentPost = { ...state.currentPost, ...updateData }
             }
         },
 
         // Toggle like locally (optimistic update)
         toggleLikeLocally: (state, action) => {
             const postId = action.payload
-            const post = state.posts.find(p => p.post_id === postId)
-            if(post){
-                post.isLiked = !post.isLiked
-                post.likes_count += post.isLiked ? 1 : -1
+            
+            const post = state.posts.find(p => p.post_id == postId)
+
+            if (post) {
+                post.is_liked = !post.is_liked
+                post.likes_count += post.is_liked ? 1 : -1
+                post.likes_count = Math.max(0, post.likes_count)
             }
+
+            if (state.currentPost?.post?.post_id === postId) {
+                state.currentPost.post.is_liked = post.is_liked
+                state.currentPost.post.likes_count = post.likes_count
+            }
+
         }
     },
 
     extraReducers: (builder) => {
         builder
 
-        // ========= Fetch all posts =========
-        .addCase(fetchAllPosts.pending, (state) => {
-            state.loading = true
-            state.fetchError = null
-        })
-        .addCase(fetchAllPosts.fulfilled, (state, action) => {
-            state.loading = false
-            state.posts = (action.payload.post_data || action.payload.data || []).map( post => ({
-                ...post,
-            }))
-            // console.log(state.posts)
-            state.pagination = action.payload.pagination || null
-        })
-        .addCase(fetchAllPosts.rejected, (state, action) => {
-            state.loading = false
-            state.fetchError = action.payload || action.error?.message
-        })
+            // ========= Fetch all posts =========
+            .addCase(fetchAllPosts.pending, (state) => {
+                state.loading = true
+                state.fetchError = null
+            })
+            .addCase(fetchAllPosts.fulfilled, (state, action) => {
+                state.loading = false
+                state.posts = (action.payload.post_data || action.payload.data || []).map(post => ({
+                    ...post,
+                    isLiked: post.is_liked
+                }))
+                // console.log(state.posts)
+                state.pagination = action.payload.pagination || null
+            })
+            .addCase(fetchAllPosts.rejected, (state, action) => {
+                state.loading = false
+                state.fetchError = action.payload || action.error?.message
+            })
 
         // ========= Create Post ===========
         builder
-        .addCase(createPost.pending, (state) => {
-            state.creating = true
-            state.createError = null
-        })
-        .addCase(createPost.fulfilled, (state, action) => {
-            state.creating = false
-            state.posts.unshift(action.payload)
-        })
-        .addCase(createPost.rejected, (state, action) => {
-            state.creating = false
-            state.createError = action.payload || action.error?.message
-        })
+            .addCase(createPost.pending, (state) => {
+                state.creating = true
+                state.createError = null
+            })
+            .addCase(createPost.fulfilled, (state, action) => {
+                state.creating = false
+                state.posts.unshift(action.payload)
+            })
+            .addCase(createPost.rejected, (state, action) => {
+                state.creating = false
+                state.createError = action.payload || action.error?.message
+            })
 
         // ========= Update Post ===========
         builder
-        .addCase(updatePost.pending, (state) => {
-            state.updating = true
-            state.updateError = null
-        })
-        .addCase(updatePost.fulfilled, (state, action) => {
-            state.updating = false
-            const updatePost = action.payload
+            .addCase(updatePost.pending, (state) => {
+                state.updating = true
+                state.updateError = null
+            })
+            .addCase(updatePost.fulfilled, (state, action) => {
+                state.updating = false
+                const updatePost = action.payload
 
-            const index = state.posts.findIndex(post => post.id === updatePost.id)
-            if (index !== -1){
-                state.posts[index] = updatePost
-            }
-            if(state.currentPost?.id === updatePost.id){
-                state.currentPost = updatePost
-            }
-        })
-        .addCase(updatePost.rejected, (state, action) => {
-            state.updating = false
-            state.updateError = action.payload || action.error?.message
-        })
+                const index = state.posts.findIndex(post => post.id === updatePost.id)
+                if (index !== -1) {
+                    state.posts[index] = updatePost
+                }
+                if (state.currentPost?.id === updatePost.id) {
+                    state.currentPost = updatePost
+                }
+            })
+            .addCase(updatePost.rejected, (state, action) => {
+                state.updating = false
+                state.updateError = action.payload || action.error?.message
+            })
 
         // ========= Delete Post ===========
         builder
-        .addCase(deletePost.pending, (state) => {
-            state.deleting = true
-            state.deleteError = null
-        })
-        .addCase(deletePost.fulfilled, (state, action) => {
-            state.deleting = false
-            const deletedId = action.payload.id
+            .addCase(deletePost.pending, (state) => {
+                state.deleting = true
+                state.deleteError = null
+            })
+            .addCase(deletePost.fulfilled, (state, action) => {
+                state.deleting = false
+                const deletedId = action.payload.id
 
-            state.posts = state.posts.filter(post => post.post_id !== deletedId)
-        })
-        .addCase(deletePost.rejected, (state, action) => {
-            state.deleting = false
-            state.deleteError = action.payload || action.error?.message
-        })
+                state.posts = state.posts.filter(post => post.post_id !== deletedId)
+            })
+            .addCase(deletePost.rejected, (state, action) => {
+                state.deleting = false
+                state.deleteError = action.payload || action.error?.message
+            })
 
         // ========= Fetch single Post with comments ===========
         builder
-        .addCase(fetchPostByIdWithComments.pending, (state) => {
-            state.fetchingSingle = true
-            state.singleError = null
-        })
-        .addCase(fetchPostByIdWithComments.fulfilled, (state, action) => {
-            state.fetchingSingle = false
-            state.currentPost = action.payload
-        })
-        .addCase(fetchPostByIdWithComments.rejected, (state, action) => {
-            state.fetchingSingle = false
-            state.singleError = action.payload || action.error?.message
-        })
+            .addCase(fetchPostByIdWithComments.pending, (state) => {
+                state.fetchingSingle = true
+                state.singleError = null
+            })
+            .addCase(fetchPostByIdWithComments.fulfilled, (state, action) => {
+                state.fetchingSingle = false
+                state.currentPost = action.payload
+            })
+            .addCase(fetchPostByIdWithComments.rejected, (state, action) => {
+                state.fetchingSingle = false
+                state.singleError = action.payload || action.error?.message
+            })
+
 
         // ========= Toggle like ===========
         builder
-        .addCase(toggleLikeOnPost.pending, (state) => {
-            state.togglingLike = true
-            state.toggleLikeError = null
-        })
-        .addCase(toggleLikeOnPost.fulfilled, (state, action) => {
-            state.togglingLike = false
+            .addCase(toggleLikeOnPost.pending, (state) => {
+                state.togglingLike = true
+                state.toggleLikeError = null
+            })
+            .addCase(toggleLikeOnPost.fulfilled, (state, action) => {
+                state.togglingLike = false
+                console.log('PostID & likeFlag', action.payload)
+            })
 
-            const {postId, liked} = action.payload
-            const post = state.posts.find( p => p.post_id === postId)
+            .addCase(toggleLikeOnPost.rejected, (state, action) => {
+                state.togglingLike = false
+                state.toggleLikeError = action.payload || action.error?.message
 
-            if(post){
-                post.isLiked = liked
-            }
+                // Rollback - Optimistic updates
+                const postId = action.meta.arg
+                const post = state.posts.find(post => post.post_id == postId)
 
-            if(state.currentPost?.post?.post_id === postId){
-                state.currentPost.post.isLiked = liked
-            }
-        })
-        .addCase(toggleLikeOnPost.rejected, (state, action) => {
-            state.togglingLike = false
-            state.toggleLikeError = action.payload || action.error?.message
+                if (post) {
+                    post.is_liked = !post.is_liked
+                    post.likes_count += post.is_liked ? 1 : -1
+                    post.likes_count = Math.max(0, post.likes_count)
+                }
 
-            // Rollback - Optimistic updates
-            const postId = action.meta.arg
-            const post = state.posts.find( post => post.post_id == postId)
-            
-            if(post){
-                post.isLiked = !post.isLiked
-                post.likes_count += post.isLiked ? 1 : -1
-            }
-        })
+                if (state.currentPost?.post?.post_id === postId) {
+                    state.currentPost.post.is_liked = post.is_liked
+                    state.currentPost.post.likes_count = post.likes_count
+                }
+            })
 
     }
 })
 
-export const { 
-    toggleLikeLocally,
-} = postSlice.actions
+export const { toggleLikeLocally } = postSlice.actions
 
 export default postSlice.reducer
