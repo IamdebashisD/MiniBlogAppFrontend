@@ -98,10 +98,11 @@ export function Post({ post }) {
                                 className="flex items-center gap-2 text-gray-600 transition-colors hover:text-red-500 group"
                             >
                                 <Heart
-                                    className={`w-5 h-5 ${post.isLiked ? 'fill-red-500 text-red-500' : 'group-hover:scale-110'} transition-transform`}
+                                    className={`w-5 h-5 ${post.is_liked ? 'fill-red-500 text-red-500' : 'group-hover:scale-110'} transition-transform`}
+                                    
                                 />
-                                <span className={post.isLiked ? 'text-red-500' : ''}>
-                                    {post.likes}
+                                <span className={post.is_liked ? 'text-red-500' : ''}>
+                                    {post.likes_count}
                                 </span>
                             </button>
 
