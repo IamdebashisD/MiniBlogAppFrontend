@@ -4,12 +4,19 @@ import api from "../../api/axios.js"
 
 export const createPost = createAsyncThunk(
     'post/upload',
-    async (payload, { rejectWithValue }) => {
+    async (payload, { rejectWithValue, getState }) => {
         try {
+            const state = getState()
             const response = await api.post('/post/upload', payload)
+            const auth = state.auth.user
             const body = response.data
             if (body.error_code) return rejectWithValue(body)
-            return body.data
+            return {
+                ...body.data,
+                user: {
+                    username: auth.username
+                }
+            }
         } catch(error){
             return rejectWithValue(error.response?.data?.message || error.data?.message)
         }
