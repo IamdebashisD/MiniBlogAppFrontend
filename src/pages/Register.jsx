@@ -32,6 +32,7 @@ function Register() {
             setPassword('')
         }
     } 
+    
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
 
@@ -90,10 +91,15 @@ function Register() {
                             required
                         />
                         <span
-                            className='absolute inset-y-0 flex items-center cursor-pointer right-3'
                             onClick={()=>setShowPassword(prev => !prev)}
+                            className='absolute inset-y-0 flex items-center cursor-pointer right-3'
                         >
-                            <img src={showPassword ? hidden: view} alt='eye' width={15} height={14} />
+                            <img 
+                                src={showPassword ? hidden: view} 
+                                alt='eye' 
+                                width={15} 
+                                height={14} 
+                            />
                         </span>
                     </div>
                 </div>
@@ -108,7 +114,8 @@ function Register() {
                 <button
                     disabled={loading}
                     className='px-6 py-3 text-white bg-[#401B1C] hover:bg-[#2E1314] rounded-lg'
-                    >{loading ? 'Registering...' : 'Register'}
+                >
+                    {loading ? 'Registering...' : 'Register'}
                 </button>
 
             </form>
