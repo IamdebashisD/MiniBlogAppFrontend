@@ -113,6 +113,7 @@ const postSlice = createSlice({
                 state.fetchError = action.payload || action.error?.message
             })
 
+
         // ========= Create Post ===========
         builder
             .addCase(createPost.pending, (state) => {
@@ -128,6 +129,7 @@ const postSlice = createSlice({
                 state.createError = action.payload || action.error?.message
             })
 
+            
         // ========= Update Post ===========
         builder
             .addCase(updatePost.pending, (state) => {
