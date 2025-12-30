@@ -47,21 +47,21 @@ export function Post({ post }) {
 
 
     useEffect(() => {
-        if(!commentsState){
+        if (!commentsState) {
             dispatch(fetchCommentsByPostId(post.post_id))
         }
     }, [dispatch, post.post_id]);
 
-    
+
     const handleCommentSubmit = (event) => {
         event.preventDefault()
 
-        if (!commentText.trim()) return 
+        if (!commentText.trim()) return
         dispatch(addComment({
             post_id: post.post_id,
             content: commentText
         }))
-        
+
         setCommentText('')
     }
 
@@ -77,10 +77,18 @@ export function Post({ post }) {
                     </div>
                     <div className="flex-1 text-left">
                         <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-900">{(post?.user?.username)?.length < 20 ? post.user?.username : post.user?.username.slice(0, 15)}</span>
+                            
+                            <span className="font-semibold text-gray-900">
+                                {
+                                    (post?.user?.username).length < 20 ?
+                                        post.user?.username : post.user?.username.slice(0, 15)
+                                }
+                            </span>
+
                             <span className="text-sm text-gray-500">
                                 {formatTimestamp(new Date(post.created_at))}
                             </span>
+
                         </div>
 
                         {/* Post Title */}
@@ -98,12 +106,16 @@ export function Post({ post }) {
                                 className="flex items-center gap-2 text-gray-600 transition-colors hover:text-red-500 group"
                             >
                                 <Heart
-                                    className={`w-5 h-5 ${post.is_liked ? 'fill-red-500 text-red-500' : 'group-hover:scale-110'} transition-transform`}
-                                    
+                                    className={`w-5 h-5 transition-transform ${
+                                        post.is_liked ? 'fill-red-500 text-red-500' : 'group-hover:scale-110'
+                                    }`}
+                                    fill={post.is_liked? 'currentColor': 'none'}
                                 />
+
                                 <span className={post.is_liked ? 'text-red-500' : ''}>
                                     {post.likes_count}
                                 </span>
+                                
                             </button>
 
                             <button
@@ -134,9 +146,12 @@ export function Post({ post }) {
                                         disabled={addLoading || !commentText.trim()}
                                         className="px-4 py-2 text-white transition-colors bg-purple-600 rounded-full hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                                     >
-                                       {addLoading ? 'adding...' : <Send className="w-4 h-4" />}
+                                        {addLoading ? 
+                                            'adding...' : <Send className="w-4 h-4" />
+                                        }
                                     </button>
                                 </form>
+
                             </div>
                         )}
                     </div>
