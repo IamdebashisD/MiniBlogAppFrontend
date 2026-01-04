@@ -14,19 +14,22 @@ function App() {
   const dispatch = useDispatch()
   const posts = useSelector(state => state.post?.posts || [])
   const { loading } = useSelector(state => state.post)
+  // console.log('loading from app.jsx -> ',loading)
 
-  const { creatingPost } = useSelector(state => state.post)
 
   useEffect(() => {
     dispatch(fetchAllPosts({ page: 1, per_page: 10 }))
   }, [dispatch])
 
 
+  if(loading)
+
 
   // Skeleton loading
   if (loading) {
     return (
       <div className='max-w-2xl px-2 mx-auto space-y-4 '>
+        {<CreatePostSkeleton />}
         {Array.from({ length: 10 }).map((_, i) => (
           <PostSkeleton key={i} />
         ))}
@@ -34,25 +37,14 @@ function App() {
     )
   }
 
-
-
-  if (!posts || posts.length === 0) {
-    return (
-      <div className='max-w-2xl px-2 mx-auto space-y-4 '>
-        {Array.from({ length: 10 }).map((_, i) => (
-          <PostSkeleton key={i} />
-        ))}
-      </div>
-    )
-  }
 
 
   return (
     <>
       <Header />
-      {creatingPost ? <CreatePostSkeleton /> : <CreatePost />}
-      {/* <Register />
-      <Login /> */}
+      <CreatePost />
+      {/* <Register /> */}
+      <Login />
 
 
       {posts.map(post => (
